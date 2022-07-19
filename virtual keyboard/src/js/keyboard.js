@@ -1,27 +1,31 @@
 export class Keyboard {
   #switchEl;
   #fontSelectEl;
+  #containerEl;
   constructor() {
     this.#assignElement();
     this.#addEvent();
   }
 
   #assignElement() {
-    this.#switchEl = document.querySelector("#switch");
-    this.#fontSelectEl = document.querySelector("#font");
+    //처음 document에서부터 탐색한 걸 container부터 탐색하는 걸로 변경하여 비용 절감
+    this.#containerEl = document.querySelector(".container");
+    this.#switchEl = this.#containerEl.querySelector("#switch");
+    this.#fontSelectEl = this.#containerEl.querySelector("#font");
   }
 
   #addEvent() {
-    this.#switchEl.addEventListener("click", (event) => {
-      //   console.log(event.target.checked);
-      document.documentElement.setAttribute(
-        "theme",
-        event.target.checked ? "dark-mode" : ""
-      );
-    });
-    this.#fontSelectEl.addEventListener("change", (event) => {
-      //   console.log(event.target.value);
-      document.documentElement.style.fontFamily = event.target.value;
-    });
+    this.#switchEl.addEventListener("change", this.#onChangeTheme);
+    this.#fontSelectEl.addEventListener("change", this.#onChangeFont);
+  }
+
+  #onChangeTheme(event) {
+    document.documentElement.setAttribute(
+      "theme",
+      event.target.checked ? "dark-mode" : ""
+    );
+  }
+  #onChangeFont(event) {
+    document.body.style.fontFamily = event.target.value;
   }
 }
