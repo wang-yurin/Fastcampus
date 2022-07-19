@@ -26,6 +26,8 @@ export class Keyboard {
     document.addEventListener("keydown", this.#onKeyDown.bind(this));
     document.addEventListener("keyup", this.#onKeyUp.bind(this));
     this.#inputEl.addEventListener("input", this.#onInput);
+    this.#keyboardEl.addEventListener("mousedown", this.#onMouseDown);
+    document.addEventListener("mouseup", this.#onMouseUp.bind(this));
   }
 
   #onChangeTheme(event) {
@@ -57,5 +59,26 @@ export class Keyboard {
     this.#keyboardEl
       .querySelector(`[data-code=${event.code}]`)
       ?.classList.remove("active");
+  }
+
+  #onMouseDown(event) {
+    // console.log(event.target);
+    event.target.closest("div.key")?.classList.add("active");
+  }
+
+  #onMouseUp(event) {
+    const keyEl = event.target.closest("div.key");
+    const isActive = !!keyEl?.classList.contains("active");
+    const val = keyEl?.dataset.val;
+    if (isActive && !!val && val !== "Space" && val !== "Backspace") {
+      this.#inputEl.value += val;
+    }
+    if (isActive && val === "Space") {
+      this.#inputEl.value += " ";
+    }
+    if (isActive && val === "Backspace") {
+      this.#inputEl.value = this.#inputEl.value.slice(0, -1);
+    }
+    this.#keyboardEl.querySelector(".active")?.classList.remove("active");
   }
 }
