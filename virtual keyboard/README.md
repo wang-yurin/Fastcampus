@@ -70,3 +70,13 @@ module.exports = {
 - https://yamoo9.gitbook.io/webpack/webpack/config-webpack-dev-environment/webpack-mode
 
 ---
+
+### 이벤트 발생 과정
+
+- 어떤 엘리먼트에서 이벤트가 발생하면 document에서 해당 이벤트가 발생한 엘리먼트까지 찾아들어간다.(이벤트 캡쳐링) 그런 다음 해당 엘리먼트에서 이벤트가 발생하고 상위 도큐멘트까지 이벤트가 전파된다.(이벤트 버블링)
+
+- .target 실제 해당 이벤트가 발생한 대상
+- .currentTarget 이벤트를 걸어놓은 대상
+- .bubbles의 값(true, false)를 통해 해당 이벤트가 이벤트 버블링 여부를 확인 할 수있다.
+
+### 옵셔널 체이닝
