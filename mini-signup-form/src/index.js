@@ -16,30 +16,87 @@ window.addEventListener('load', () => {
 const $pw = document.querySelector('#pw')
 const $pwCheck = document.querySelector('#pw-check')
 const $submit = document.querySelector('#submit')
+const $idMsg = document.querySelector('#id-msg')
+const $pwMsg = document.querySelector('#pw-msg')
+const $pwCheckMsg = document.querySelector('#pw-check-msg')
 
 const ID_REGEX = new RegExp('^[a-z0-9_-]{5,20}$')
 const PW_REGEX = new RegExp('^[a-zA-Z0-9]{8,16}$')
 
+const ID_ERROR_MSG = {
+    required: '필수 정보입니다.',
+    invalid: '5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다.',
+}
+const PW_ERROR_MSG = {
+    required: '필수 정보입니다.',
+    invalid: '8~16자 영문 대 소문자, 숫자를 사용하세요.',
+}
+const PW_CHECK_ERROR_MSG = {
+    required: '필수 정보입니다.',
+    invalid: '비밀번호가 일치하지 않습니다.',
+}
+
 const checkIdValidation = (value) => {
     // 모든 필드의 값은 빠짐 없이 입력해야 합니다.
     // 5~20자. 영문 소문자, 숫자. 특수기호(_),(-)만 사용 가능
-    const isValidId = ID_REGEX.test(value)
+    let isValidId
+    if (value.length === 0) {
+        isValidId = 'required'
+    } else {
+        isValidId = ID_REGEX.test(value) ? true : 'invalid'
+    }
     console.log(isValidId)
+    // 3. 커스텀 에러 메시지
+    // (1) 비어 있을 때, (2) 유효하지 않은 값일 때
+    // input 태그에 border-red-600 class 추가 & **-msg div에 에러 메시지 추가
+    if (isValidId !== true) {
+        $id.classList.add('border-red-600')
+        $idMsg.innerText = ID_ERROR_MSG[isValidId]
+    } else {
+        $id.classList.remove('border-red-600')
+        $idMsg.innerText = ''
+    }
 }
 $id.addEventListener('focusout', () => checkIdValidation($id.value))
 
 const checkPwValidation = (value) => {
     // 모든 필드의 값은 빠짐 없이 입력해야 합니다.
     // 8~16자. 영문 대/소문자, 숫자 사용 가능
-    const isValidPw = PW_REGEX.test(value)
-    console.log(isValidPw)
+    let isValidPw
+    if (value.length === 0) {
+        isValidPw = 'required'
+    } else {
+        isValidPw = PW_REGEX.test(value) ? true : 'invalid'
+    }
+
+    // 3. 커스텀 에러 메시지 추가
+    if (isValidPw !== true) {
+        $pw.classList.add('border-red-600')
+        $pwMsg.innerText = PW_ERROR_MSG[isValidPw]
+    } else {
+        $pw.classList.remove('border-red-600')
+        $pwMsg.innerText = ''
+    }
 }
 $pw.addEventListener('focusout', () => checkPwValidation($pw.value))
 
 const checkPwCheckValidation = (value) => {
     // 비밀번호와 일치
-    const isValidPwCheck = $pw.value === value
-    console.log(isValidPwCheck)
+    // 3. 커스텀 에러 메시지 추가
+    let isValidPwCheck
+    if (value.length === 0) {
+        isValidPwCheck = 'required'
+    } else {
+        isValidPwCheck = $pw.value === value ? true : 'invalid'
+    }
+
+    if (isValidPwCheck !== true) {
+        $pwCheck.classList.add('border-red-600')
+        $pwCheckMsg.innerText = PW_CHECK_ERROR_MSG[isValidPwCheck]
+    } else {
+        $pwCheck.classList.remove('border-red-600')
+        $pwCheckMsg.innerText = ''
+    }
 }
 $pwCheck.addEventListener('focusout', () =>
     checkPwCheckValidation($pwCheck.value)
