@@ -15,7 +15,6 @@ window.addEventListener('load', () => {
 // 핸들러 : (1) 해당 input 유효성 검사, (2) 모든 필드의 유효성 검사
 const $pw = document.querySelector('#pw')
 const $pwCheck = document.querySelector('#pw-check')
-const $submit = document.querySelector('#submit')
 const $idMsg = document.querySelector('#id-msg')
 const $pwMsg = document.querySelector('#pw-msg')
 const $pwCheckMsg = document.querySelector('#pw-check-msg')
@@ -36,16 +35,16 @@ const PW_CHECK_ERROR_MSG = {
     invalid: '비밀번호가 일치하지 않습니다.',
 }
 
-const checkIdValidation = (value) => {
-    // 모든 필드의 값은 빠짐 없이 입력해야 합니다.
-    // 5~20자. 영문 소문자, 숫자. 특수기호(_),(-)만 사용 가능
-    let isValidId
+// 모든 필드의 값은 빠짐 없이 입력해야 합니다., 5~20자. 영문 소문자, 숫자. 특수기호(_),(-)만 사용 가능
+const checkIdRegex = (value) => {
     if (value.length === 0) {
-        isValidId = 'required'
+        return 'required'
     } else {
-        isValidId = ID_REGEX.test(value) ? true : 'invalid'
+        return ID_REGEX.test(value) ? true : 'invalid'
     }
-    console.log(isValidId)
+}
+const checkIdValidation = (value) => {
+    const isValidId = checkIdRegex(value)
     // 3. 커스텀 에러 메시지
     // (1) 비어 있을 때, (2) 유효하지 않은 값일 때
     // input 태그에 border-red-600 class 추가 & **-msg div에 에러 메시지 추가
@@ -56,19 +55,20 @@ const checkIdValidation = (value) => {
         $id.classList.remove('border-red-600')
         $idMsg.innerText = ''
     }
+    return isValidId
 }
 $id.addEventListener('focusout', () => checkIdValidation($id.value))
 
-const checkPwValidation = (value) => {
-    // 모든 필드의 값은 빠짐 없이 입력해야 합니다.
-    // 8~16자. 영문 대/소문자, 숫자 사용 가능
-    let isValidPw
+// 모든 필드의 값은 빠짐 없이 입력해야 합니다., 8~16자. 영문 대/소문자, 숫자 사용 가능
+const checkPwRegex = (value) => {
     if (value.length === 0) {
-        isValidPw = 'required'
+        return 'required'
     } else {
-        isValidPw = PW_REGEX.test(value) ? true : 'invalid'
+        return PW_REGEX.test(value) ? true : 'invalid'
     }
-
+}
+const checkPwValidation = (value) => {
+    const isValidPw = checkPwRegex(value)
     // 3. 커스텀 에러 메시지 추가
     if (isValidPw !== true) {
         $pw.classList.add('border-red-600')
@@ -77,19 +77,21 @@ const checkPwValidation = (value) => {
         $pw.classList.remove('border-red-600')
         $pwMsg.innerText = ''
     }
+    return isValidPw
 }
 $pw.addEventListener('focusout', () => checkPwValidation($pw.value))
 
-const checkPwCheckValidation = (value) => {
-    // 비밀번호와 일치
-    // 3. 커스텀 에러 메시지 추가
-    let isValidPwCheck
+// 비밀번호와 일치
+const checkPwCheckRegex = (value) => {
     if (value.length === 0) {
-        isValidPwCheck = 'required'
+        return 'required'
     } else {
-        isValidPwCheck = $pw.value === value ? true : 'invalid'
+        return $pw.value === value ? true : 'invalid'
     }
-
+}
+const checkPwCheckValidation = (value) => {
+    // 3. 커스텀 에러 메시지 추가
+    const isValidPwCheck = checkPwCheckRegex(value)
     if (isValidPwCheck !== true) {
         $pwCheck.classList.add('border-red-600')
         $pwCheckMsg.innerText = PW_CHECK_ERROR_MSG[isValidPwCheck]
@@ -97,14 +99,41 @@ const checkPwCheckValidation = (value) => {
         $pwCheck.classList.remove('border-red-600')
         $pwCheckMsg.innerText = ''
     }
+    return isValidPwCheck
 }
 $pwCheck.addEventListener('focusout', () =>
     checkPwCheckValidation($pwCheck.value)
 )
 
+// 4. 입력 확인 모달 창
+const $submit = document.querySelector('#submit')
+const $modal = document.querySelector('#modal')
+
+const $confirmId = document.querySelector('#confirm-id')
+const $confirmPw = document.querySelector('#confirm-pw')
+
+const $cancelBtn = document.querySelector('#cancel-btn')
+const $approveBtn = document.querySelector('#approve-btn')
+
 $submit.addEventListener('click', (event) => {
-    checkIdValidation($id.value)
-    checkPwValidation($pw.value)
-    checkPwCheckValidation($pwCheck.value)
     event.preventDefault()
+    const isValidForm =
+        checkIdValidation($id.value) === true &&
+        checkPwValidation($pw.value) === true &&
+        checkPwCheckValidation($pwCheck.value) === true
+    console.log(isValidForm)
+    if (isValidForm) {
+        $confirmId.innerText = $id.value
+        $confirmPw.innerText = $pw.value
+        $modal.showModal()
+    }
+})
+
+$cancelBtn.addEventListener('click', () => {
+    $modal.close()
+})
+$approveBtn.addEventListener('click', () => {
+    alert('가입되었습니다 🥳')
+    $modal.close()
+    // window.location.reload()
 })
