@@ -38,8 +38,19 @@ class DatePicker {
 
   constructor() {
     this.initCalendarDate();
+    this.initSelectedDate();
     this.assignElement();
+    this.setDateInput();
     this.addEvent();
+  }
+
+  initSelectedDate() {
+    this.selectedDate = { ...this.#calendarDate };
+  }
+
+  setDateInput() {
+    this.dateInputEl.textContent = this.formetDate(this.selectedDate.data);
+    this.dateInputEl.dataset.value = this.selectedDate.data;
   }
 
   initCalendarDate() {
@@ -70,9 +81,16 @@ class DatePicker {
     this.dateInputEl.addEventListener("click", this.toggleCalendar.bind(this));
     this.nextBtnEl.addEventListener("click", this.moveToNextMonth.bind(this));
     this.prevBtnEl.addEventListener("click", this.moveToPrevMonth.bind(this));
+    this.calendarDatesEl.addEventListener(
+      "click",
+      this.onClickSelectDate.bind(this)
+    );
   }
 
   toggleCalendar() {
+    if (this.calendarEl.classList.contains("active")) {
+      this.#calendarDate = { ...this.selectedDate };
+    }
     this.calendarEl.classList.toggle("active");
     this.updateMonth();
     this.updateDates();
@@ -107,6 +125,7 @@ class DatePicker {
     this.colorSaturday();
     this.colorSunday();
     this.markToday();
+    this.markSelectedDate();
   }
 
   colorSaturday() {
@@ -153,6 +172,17 @@ class DatePicker {
     }
   }
 
+  markSelectedDate() {
+    if (
+      this.selectedDate.year === this.#calendarDate.year &&
+      this.selectedDate.month === this.#calendarDate.month
+    ) {
+      this.calendarDatesEl
+        .querySelector(`[data-date = '${this.selectedDate.date}']`)
+        .classList.add("selected");
+    }
+  }
+
   moveToNextMonth() {
     this.#calendarDate.month++;
     if (this.#calendarDate.month > 11) {
@@ -171,6 +201,45 @@ class DatePicker {
     }
     this.updateMonth();
     this.updateDates();
+  }
+
+  onClickSelectDate(event) {
+    const eventTarget = event.target;
+    if (eventTarget.dataset.date) {
+      this.calendarDatesEl
+        .querySelector(".selected")
+        ?.classList.remove(".selected");
+      eventTarget.classList.add(".selected");
+      this.selectedDate = {
+        data: new Date(
+          this.#calendarDate.year,
+          this.#calendarDate.month,
+          eventTarget.dataset.date
+        ),
+        year: this.#calendarDate.year,
+        month: this.#calendarDate.month,
+        date: eventTarget.dataset.date,
+      };
+      this.dateInputEl.textContent = this.formetDate(this.selectedDate.data);
+      this.dateInputEl.dataset.value = this.selectedDate.data;
+      this.calendarEl.classList.remove("active");
+    }
+  }
+
+  formetDate(dateData) {
+    let date = dateData.getDate();
+    if (date < 10) {
+      date = `0${date}`;
+    }
+
+    let month = dateData.getMonth() + 1;
+    if (month < 10) {
+      month = `0${month}`;
+    }
+
+    let year = dateData.getFullYear();
+
+    return `${year}/${month}/${date}`;
   }
 }
 new DatePicker();
