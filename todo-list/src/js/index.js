@@ -18,7 +18,7 @@ class TodoList {
 
   onClickAddBtn() {
     if (this.todoInputEl.value.length === 0) {
-      alert("내용을 입력해주세요.");
+      alert("");
       return;
     }
 
