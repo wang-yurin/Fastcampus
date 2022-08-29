@@ -75,7 +75,7 @@ class TodoList {
   createButton(btnId, btnClassName, iconClassName) {
     const btn = document.createElement("button");
     const icon = document.createElement("i");
-    icon.classList.add(iconClassName);
+    icon.classList.add(...iconClassName);
     btn.appendChild(icon);
     btn.id = btnId;
     btn.classList.add(btnClassName);
